@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neologik Integration - Method 3: Web Chat SDK</title>
+    <style>
+        /* Page styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin: 0;
+        }
+        
+        .content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .bot-container-wrapper {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        #webchat {
+            height: 600px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        #status {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        #status.loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        #status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        #status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            #webchat {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Neologik Integration Test - Method 3</h1>
+        <p class="subtitle">Web Chat SDK Example</p>
+    </div>
+    
+    <div class="content">
+        <h2>Advanced Integration</h2>
+        <p>This is a demonstration of Neologik embedded using Method 3 (Web Chat SDK).</p>
+        <p><strong>Configuration:</strong></p>
+        <ul>
+            <li>FQDN: <code>https://neodev03.neologik.dev</code></li>
+            <li>Integration Method: Direct Line SDK</li>
+            <li>Token Endpoint: <code>/bot/v4/token</code></li>
+            <li>Framework: Microsoft Bot Framework Web Chat</li>
+        </ul>
+        <p><strong>Features:</strong></p>
+        <ul>
+            <li>Full customization capability</li>
+            <li>Direct Line protocol</li>
+            <li>Custom styling options</li>
+            <li>Event handling and analytics hooks</li>
+        </ul>
+    </div>
+    
+    <div class="bot-container-wrapper">
+        <div id="status" class="loading">Initializing Neologik Web Chat...</div>
+        <div id="webchat" role="main" aria-label="Neologik Web Chat"></div>
+    </div>
+    
+    <!-- Web Chat SDK -->
+    <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
+    
+    <script>
+        (async function() {
+            const statusEl = document.getElementById('status');
+            
+            try {
+                statusEl.textContent = 'Requesting Direct Line token...';
+                
+                // Generate user ID
+                const userId = 'dl_' + generateUUID();
+                
+                // Get Direct Line token from Neologik
+                const tokenResponse = await fetch('https://neodev03.neologik.dev/bot/v4/token', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        user_id: userId
+                    })
+                });
+                
+                if (!tokenResponse.ok) {
+                    throw new Error(`Token request failed: ${tokenResponse.status} ${tokenResponse.statusText}`);
+                }
+                
+                const tokenData = await tokenResponse.json();
+                
+                statusEl.textContent = 'Connecting to Direct Line...';
+                
+                // Initialize Direct Line
+                const directLine = window.WebChat.createDirectLine({ 
+                    token: tokenData.token 
+                });
+                
+                // Render Web Chat
+                statusEl.textContent = 'Rendering Web Chat interface...';
+                
+                window.WebChat.renderWebChat({
+                    directLine: directLine,
+                    userID: userId,
+                    styleOptions: {
+                        // Customize colors to match Neologik branding
+                        accent: '#667eea',
+                        backgroundColor: 'white',
+                        
+                        // Bot appearance
+                        botAvatarInitials: 'NL',
+                        botAvatarBackgroundColor: '#667eea',
+                        
+                        // User appearance  
+                        userAvatarInitials: 'You',
+                        userAvatarBackgroundColor: '#764ba2',
+                        
+                        // Message bubbles
+                        bubbleBackground: '#667eea',
+                        bubbleTextColor: 'white',
+                        bubbleFromUserBackground: '#764ba2',
+                        bubbleFromUserTextColor: 'white',
+                        
+                        // Send box
+                        sendBoxBackground: 'white',
+                        sendBoxTextColor: '#333',
+                        sendBoxButtonColor: '#667eea',
+                        sendBoxButtonColorOnHover: '#5568d3'
+                    }
+                }, document.getElementById('webchat'));
+                
+                // Success
+                statusEl.textContent = '✓ Neologik Web Chat loaded successfully';
+                statusEl.className = 'success';
+                
+                // Hide status after 3 seconds
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 3000);
+                
+                // Optional: Listen for connection status
+                directLine.connectionStatus$.subscribe(status => {
+                    console.log('Direct Line connection status:', status);
+                    // 0 = Uninitialized, 1 = Connecting, 2 = Online, 4 = Ended/ExpiredToken
+                    if (status === 2) {
+                        console.log('✓ Connected to Direct Line');
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error initializing Neologik Web Chat:', error);
+                statusEl.textContent = '✗ Error: ' + error.message;
+                statusEl.className = 'error';
+            }
+            
+            // Helper function to generate UUID
+            function generateUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = Math.random() * 16 | 0;
+                    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

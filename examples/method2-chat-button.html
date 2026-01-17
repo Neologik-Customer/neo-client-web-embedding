@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neologik Integration - Method 2: Interactive Chat Button</title>
+    <style>
+        /* Page styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin: 0;
+        }
+        
+        .content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Chat button */
+        #chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 9999;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #chat-button:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s;
+        }
+        
+        #chat-button:active {
+            transform: scale(0.95);
+        }
+        
+        /* Chat container - hidden by default */
+        #neo-bot-container {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 400px;
+            height: 600px;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-radius: 8px;
+            z-index: 9998;
+        }
+        
+        #neo-bot-container.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            #neo-bot-container {
+                width: 100%;
+                height: 100%;
+                bottom: 0;
+                right: 0;
+                border-radius: 0;
+            }
+            
+            #chat-button {
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Neologik Integration Test - Method 2</h1>
+        <p class="subtitle">Interactive Chat Button Example</p>
+    </div>
+    
+    <div class="content">
+        <h2>Your Website Content</h2>
+        <p>This is a demonstration of Neologik embedded using Method 2 (Interactive Chat Button).</p>
+        <p>Click the chat button in the bottom-right corner to open the Neologik assistant.</p>
+        <p><strong>Configuration:</strong></p>
+        <ul>
+            <li>FQDN: <code>https://neodev03.neologik.dev</code></li>
+            <li>Integration Method: Popup/Toggle</li>
+            <li>User Trigger: Button click</li>
+            <li>Responsive: Yes (full-screen on mobile)</li>
+        </ul>
+        <p><strong>Features:</strong></p>
+        <ul>
+            <li>Non-intrusive until user activates</li>
+            <li>Smooth animation on open/close</li>
+            <li>Visual feedback on hover</li>
+        </ul>
+    </div>
+    
+    <!-- Chat button -->
+    <button id="chat-button" onclick="toggleChat()" title="Open Neologik Assistant" aria-label="Open Neologik Assistant">
+        💬
+    </button>
+    
+    <!-- Chat iframe (hidden initially) -->
+    <iframe 
+        id="neo-bot-container"
+        src="https://neodev03.neologik.dev/bot/v4/webchat"
+        allow="microphone; camera"
+        title="Neologik Assistant">
+    </iframe>
+    
+    <script>
+        function toggleChat() {
+            const container = document.getElementById('neo-bot-container');
+            const button = document.getElementById('chat-button');
+            container.classList.toggle('show');
+            
+            // Update button text
+            if (container.classList.contains('show')) {
+                button.textContent = '✖';
+                button.setAttribute('title', 'Close Neologik Assistant');
+            } else {
+                button.textContent = '💬';
+                button.setAttribute('title', 'Open Neologik Assistant');
+            }
+        }
+    </script>
+</body>
+</html>
