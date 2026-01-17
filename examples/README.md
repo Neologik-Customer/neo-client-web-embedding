@@ -47,9 +47,9 @@ This directory contains working examples of all three integration methods docume
 
 All examples use:
 - **FQDN:** `https://neodev03.neologik.dev`
-- **API Version:** `v3`
-- **Webchat Endpoint:** `/bot/v3/webchat`
-- **Token Endpoint:** `/bot/v3/token`
+- **API Version:** `v4`
+- **Webchat Endpoint:** `/bot/v4/webchat`
+- **Token Endpoint:** `/bot/v4/token`
 
 To use with your own Neologik instance, replace `https://neodev03.neologik.dev` with your FQDN throughout the examples.
 
