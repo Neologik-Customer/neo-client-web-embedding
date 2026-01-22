@@ -76,7 +76,7 @@
         <p>The Neologik assistant appears in the bottom-right corner of the page.</p>
         <p><strong>Configuration:</strong></p>
         <ul>
-            <li>FQDN: <code>https://neodev03.neologik.dev</code></li>
+            <li>FQDN: <code>{{FQDN}}</code></li>
             <li>Integration Method: iframe</li>
             <li>Position: Fixed bottom-right</li>
             <li>Responsive: Yes (full-screen on mobile)</li>
@@ -86,7 +86,7 @@
     <!-- Neologik iframe -->
     <iframe 
         id="neo-bot-container"
-        src="https://neodev03.neologik.dev/bot/v4/webchat"
+        src="{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/webchat"
         allow="microphone; camera"
         title="Neologik Assistant">
     </iframe>
