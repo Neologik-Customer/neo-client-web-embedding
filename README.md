@@ -15,10 +15,10 @@ This guide provides comprehensive instructions for integrating Neologik into you
 Before proceeding with integration, ensure you have obtained the following information from your Neologik administrator:
 
 **Required Configuration:**
-- **{{FQDN}}** - Your Neologik fully qualified domain name (FQDN) (e.g., `https://neologik.yourcompany.com`)
+- **{{FQDN}}** - Your Neologik fully qualified domain name (FQDN) (e.g., `neologik.yourcompany.com`)
 - **{{BOT_SHORTNAME}}** - Your Neologik bot name, as agreed with Neologik
 - **{{API_VERSION}}** - Your bot's API version (e.g., `v4`) - **See "Finding Your API Version" below**
-- **Your Web Domain** - (if different from the Neologik FQDN) Your website domain that must be whitelisted to access Neologik (e.g., `https://yourcompany.com`)
+- **Your Web Domain** - (if different from the Neologik FQDN) Your website domain that must be whitelisted to access Neologik (e.g., `www.yourcompany.com`)
 
 ### Finding Your API Version
 
