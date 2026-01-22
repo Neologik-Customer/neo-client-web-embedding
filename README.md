@@ -6,7 +6,7 @@ This guide provides comprehensive instructions for integrating Neologik into you
 
 **Working Examples:** Production-ready example files are available in the `/examples` directory of this repository. All examples have been tested and are ready to copy into your website.
 
-**Quick Verification:** After determining your API version, verify your Neologik instance is accessible by navigating to `https://{{FQDN}}/bot/{{API_VERSION}}/webchat` in your browser (e.g., `https://neologik.yourcompany.com/bot/v4/webchat`). You should see the Neologik chat interface load successfully.
+**Quick Verification:** After determining your API version, verify your Neologik instance is accessible by navigating to `https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/webchat` in your browser (e.g., `https://neologik.yourcompany.com/{{BOT_SHORTNAME}}/{{API_VERSION}}/webchat`). You should see the Neologik chat interface load successfully.
 
 ---
 
@@ -15,9 +15,10 @@ This guide provides comprehensive instructions for integrating Neologik into you
 Before proceeding with integration, ensure you have obtained the following information from your Neologik administrator:
 
 **Required Configuration:**
-- **{{FQDN}}** - Your Neologik fully qualified domain name (e.g., `https://neologik.yourcompany.com`)
+- **{{FQDN}}** - Your Neologik fully qualified domain name (FQDN) (e.g., `https://neologik.yourcompany.com`)
+- **{{BOT_SHORTNAME}}** - Your Neologik bot name, as agreed with Neologik
 - **{{API_VERSION}}** - Your bot's API version (e.g., `v4`) - **See "Finding Your API Version" below**
-- **Your Domain** - Your website domain that must be whitelisted (e.g., `https://yourcompany.com`)
+- **Your Web Domain** - (if different from the Neologik FQDN) Your website domain that must be whitelisted to access Neologik (e.g., `https://yourcompany.com`)
 
 ### Finding Your API Version
 
@@ -25,7 +26,7 @@ Before integrating, you need to determine your bot's API version:
 
 **Method 1: Version Endpoint (Recommended)**
 ```bash
-curl https://{{FQDN}}/bot/version
+curl https://{{FQDN}}/{{BOT_SHORTNAME}}/version
 ```
 
 Response:
@@ -41,7 +42,7 @@ Use the `api_version` value (e.g., `v4`) in all endpoint URLs below.
 
 **Method 2: Browser Check**
 
-Navigate to `https://{{FQDN}}/bot/version` in your browser and note the `api_version` field.
+Navigate to `https://{{FQDN}}/{{BOT_SHORTNAME}}/version` in your browser and note the `api_version` field.
 
 **Important Security Requirements:**
 1. Your website's domain must be registered in the Neologik allowed origins configuration
@@ -108,7 +109,7 @@ Navigate to `https://{{FQDN}}/bot/version` in your browser and note the `api_ver
     <!-- Neologik iframe -->
     <iframe 
         id="neo-bot-container"
-        src="https://{{FQDN}}/bot/{{API_VERSION}}/webchat"
+        src="https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/webchat"
         allow="microphone; camera"
         title="Neologik Assistant">
     </iframe>
@@ -207,7 +208,7 @@ Navigate to `https://{{FQDN}}/bot/version` in your browser and note the `api_ver
     <!-- Chat iframe (hidden initially) -->
     <iframe 
         id="neo-bot-container"
-        src="https://{{FQDN}}/bot/{{API_VERSION}}/webchat"
+        src="https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/webchat"
         allow="microphone; camera"
         title="Neologik Assistant">
     </iframe>
@@ -251,7 +252,7 @@ Navigate to `https://{{FQDN}}/bot/version` in your browser and note the `api_ver
     <script>
         (async function() {
             // Get Direct Line token from your bot
-            const tokenResponse = await fetch('https://{{FQDN}}/bot/{{API_VERSION}}/token', {
+            const tokenResponse = await fetch('https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -305,7 +306,7 @@ Navigate to `https://{{FQDN}}/bot/version` in your browser and note the `api_ver
 <script>
     (function() {
         const iframe = document.createElement('iframe');
-        iframe.src = 'https://{{FQDN}}/bot/{{API_VERSION}}/webchat';
+        iframe.src = 'https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/webchat';
         iframe.style.cssText = 'position:fixed;bottom:20px;right:20px;width:400px;height:600px;border:none;box-shadow:0 4px 20px rgba(0,0,0,0.3);border-radius:8px;z-index:9999;';
         iframe.allow = 'microphone; camera';
         iframe.title = 'Neologik Assistant';
@@ -332,7 +333,7 @@ function NeoBotWidget() {
             
             script.onload = async () => {
                 // Get token
-                const response = await fetch('https://{{fqdn}}/bot/v3/token', {
+                const response = await fetch('https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/token', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: 'dl_' + crypto.randomUUID() })
@@ -383,7 +384,7 @@ export default {
             
             script.onload = async () => {
                 // Get token
-                const response = await fetch('https://{{FQDN}}/bot/{{API_VERSION}}/token', {
+                const response = await fetch('https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/token', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: 'dl_' + crypto.randomUUID() })
@@ -423,7 +424,7 @@ export class NeoBotComponent implements OnInit {
     
     script.onload = async () => {
       // Get token
-      const response = await fetch('https://{{FQDN}}/bot/{{API_VERSION}}/token', {
+      const response = await fetch('https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: 'dl_' + crypto.randomUUID() })
@@ -516,8 +517,8 @@ Add to your site's CSP headers:
 
 ```http
 Content-Security-Policy: 
-    frame-src https://{{fqdn}};
-    connect-src https://{{fqdn}} https://directline.botframework.com;
+    frame-src https://{{FQDN}};
+    connect-src https://{{FQDN}} https://directline.botframework.com;
     script-src https://cdn.botframework.com;
 ```
 
@@ -582,10 +583,10 @@ directLine.activity$
 **Solution:** Verify you're using the correct production endpoint with your API version
 ```html
 <!-- CORRECT (replace {{API_VERSION}} with your version, e.g., v4) -->
-<iframe src="https://{{FQDN}}/bot/{{API_VERSION}}/webchat"></iframe>
+<iframe src="https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/webchat"></iframe>
 
 <!-- INCORRECT - Do not use test endpoint -->
-<iframe src="https://{{FQDN}}/bot/{{API_VERSION}}/test-chat.html"></iframe>
+<iframe src="https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/test-chat.html"></iframe>
 ```
 
 #### CORS Errors in Browser Console
@@ -603,7 +604,7 @@ directLine.activity$
 
 **Solution:** Test the token endpoint manually (replace {{API_VERSION}} with your version)
 ```javascript
-fetch('https://{{FQDN}}/bot/{{API_VERSION}}/token', {
+fetch('https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user_id: 'dl_test-' + Date.now() })
@@ -652,7 +653,7 @@ fetch('https://{{FQDN}}/bot/{{API_VERSION}}/token', {
 
 | Symptom | Likely Cause | Solution |
 |---------|--------------|----------|
-| 404 error | Wrong endpoint | Use `/bot/{{API_VERSION}}/webchat` (check version at `/bot/version`) |
+| 404 error | Wrong endpoint | Use `/{{BOT_SHORTNAME}}/{{API_VERSION}}/webchat` (check version at `/{{BOT_SHORTNAME}}/version`) |
 | CORS error | Domain not whitelisted | Contact Neologik administrator |
 | Blank iframe | HTTPS/SSL issue | Check SSL certificate validity |
 | No bot response | Token expired | Tokens valid for 1 hour, refresh page |
@@ -749,7 +750,7 @@ Gather the following information to expedite resolution:
 <script>
 (function() {
     const iframe = document.createElement('iframe');
-    iframe.src = 'https://{{FQDN}}/bot/{{API_VERSION}}/webchat';
+    iframe.src = 'https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/webchat';
     iframe.style.cssText = 'position:fixed;bottom:20px;right:20px;width:400px;height:600px;border:none;box-shadow:0 4px 20px rgba(0,0,0,0.3);border-radius:8px;z-index:99999;';
     document.body.appendChild(iframe);
 })();
