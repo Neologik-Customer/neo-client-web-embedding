@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide provides comprehensive instructions for integrating Neologik into your website. Three integration methods are available to accommodate different technical requirements and use cases.
+This guide provides comprehensive instructions for integrating Neologik into your website. Four integration methods are available to accommodate different technical requirements and use cases. Methods 1-3 apply to agents configured for anonymous web chat; Method 4 applies to signed-in (authenticated) agents.
 
 **Working Examples:** Production-ready example files are available in the `/examples` directory of this repository. All examples have been tested and are ready to copy into your website.
 
@@ -227,6 +227,8 @@ Navigate to `https://{{FQDN}}/{{BOT_SHORTNAME}}/version` in your browser and not
 
 ## Integration Method 3: Web Chat SDK\n\n**Recommended for:** Advanced implementations requiring comprehensive customization capabilities. Suitable for modern JavaScript frameworks (React, Vue.js, Angular) and custom web applications.
 
+**Note:** This method uses the agent's public token endpoint, which exists only on agents configured for anonymous web chat. If the token request returns 404, your agent is signed-in only - use Method 4 below.
+
 ### Step 1: Add Web Chat SDK
 
 ```html
@@ -293,6 +295,84 @@ Navigate to `https://{{FQDN}}/{{BOT_SHORTNAME}}/version` in your browser and not
 </body>
 </html>
 ```
+
+---
+
+## Integration Method 4: Signed-In (Authenticated) Embedding
+
+**Recommended for:** Applications whose users already sign in with Microsoft Entra ID (formerly Azure AD), where the agent must know who it is talking to - for example internal portals, dashboards and line-of-business applications.
+
+Some Neologik agents are configured as **signed-in only**. These agents deliberately expose no public token endpoint: an anonymous visitor can never reach them, and the connection secret must never appear in a browser. Methods 1-3 above do not apply to signed-in agents.
+
+### How It Works
+
+1. Your user signs in to **your** application as normal (for example via Microsoft Entra ID).
+2. Your application's **backend** requests a chat token from the Direct Line token service, using a connection secret that is held server-side only:
+
+   ```
+   POST https://directline.botframework.com/v3/directline/tokens/generate
+   Authorization: Bearer <connection secret - server-side only>
+   Content-Type: application/json
+
+   { "user": { "id": "dl_<stable-user-id>" } }
+   ```
+
+   The `<stable-user-id>` should be derived from the signed-in user's directory identity (for example, a hash of their Entra object ID) so the same person always resumes as the same chat user.
+3. Your backend returns **only the token** to the page - never the secret.
+4. The page initialises Web Chat with that token (as in Method 3, but fetching the token from your own backend endpoint instead of a public one).
+
+### Backend Token Endpoint Example (Python)
+
+```python
+import hashlib
+import requests
+
+DIRECTLINE_GENERATE_URL = "https://directline.botframework.com/v3/directline/tokens/generate"
+
+def mint_chat_token(user_object_id: str, connection_secret: str) -> dict:
+    """Mint a user-scoped Direct Line token for the signed-in user.
+
+    connection_secret comes from your server-side secret store (for
+    example Azure Key Vault) - it must never reach the browser.
+    """
+    user_id = "dl_" + hashlib.sha256(user_object_id.encode()).hexdigest()[:32]
+    response = requests.post(
+        DIRECTLINE_GENERATE_URL,
+        headers={"Authorization": f"Bearer {connection_secret}"},
+        json={"user": {"id": user_id}},
+        timeout=10,
+    )
+    response.raise_for_status()
+    data = response.json()
+    return {"token": data["token"], "userId": user_id}
+```
+
+Expose this behind an endpoint in your application (for example `POST /chat-token`) that requires your normal user authentication. The page then initialises Web Chat:
+
+```javascript
+const response = await fetch('/chat-token', { method: 'POST' });
+const { token, userId } = await response.json();
+
+window.WebChat.renderWebChat({
+    directLine: window.WebChat.createDirectLine({ token }),
+    userID: userId
+}, document.getElementById('webchat'));
+```
+
+### Obtaining the Connection Secret
+
+The connection secret is provisioned and delivered by Neologik:
+
+- Ask your Neologik administrator to nominate your application's Azure Key Vault on the agent's web channel configuration.
+- Neologik's channel provisioning then writes the secret into your Key Vault and keeps it up to date automatically - including when the secret is rotated. No secrets are exchanged by hand.
+- Your application reads the secret from its own Key Vault at runtime (using a managed identity is recommended).
+
+### Security Requirements
+
+1. **Server-side only:** the connection secret must never be embedded in a page, a client bundle, or client-side configuration.
+2. **Authenticated endpoint:** your token-minting endpoint must require your application's normal user sign-in - it is the gate to the agent.
+3. **Stable pseudonymous IDs:** derive the chat user ID from the user's directory identity; do not send names or email addresses as the chat user ID.
+4. **Registered origins:** as with all methods, your page's domain must be registered with your Neologik administrator before the embedded chat will connect.
 
 ---
 
@@ -525,6 +605,7 @@ Content-Security-Policy:
 ### User Privacy
 
 - **Anonymous Mode**: Users are assigned random IDs (`dl_<uuid>`)
+- **Signed-In Mode** (Method 4): Users are assigned a stable pseudonymous ID derived from their directory identity - no names or email addresses are used as chat IDs
 - **No PII Storage**: No personal data is stored without consent
 - **Session Persistence**: User ID saved in localStorage for continuity
 - **Secure Communication**: All traffic over HTTPS
@@ -821,16 +902,16 @@ Choose your integration method based on your website type:
 - Better conversion rates
 
 ### Enterprise Application or Dashboard
-**Recommended:** Method 3 (Web Chat SDK)
+**Recommended:** Method 4 (Signed-In Embedding) when your users authenticate; otherwise Method 3 (Web Chat SDK)
 - Full control over styling and behavior
 - Custom event handling
 - Analytics integration
-- Can integrate with existing authentication
+- The agent knows who it is talking to (Method 4)
 
 ### Internal Tool or Admin Panel
-**Recommended:** Method 3 (Web Chat SDK)
+**Recommended:** Method 4 (Signed-In Embedding)
 - Customize UX to match application
-- Integrate with existing auth system
+- Chat identity follows your existing user sign-in
 - Advanced features and control
 
 ---
