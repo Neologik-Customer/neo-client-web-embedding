@@ -141,13 +141,13 @@
     
     <!-- Chat button -->
     <button id="chat-button" onclick="toggleChat()" title="Open Neologik Assistant" aria-label="Open Neologik Assistant">
-        💬
+        Chat
     </button>
     
     <!-- Chat iframe (hidden initially) -->
     <iframe 
         id="neo-bot-container"
-        src="https://{{FQDN}}/{{BOT_SHORTNAME}}/{{API_VERSION}}/webchat"
+        src="https://{{FQDN}}/{{CHANNEL_PATH}}/{{API_VERSION}}/webchat"
         allow="microphone; camera"
         title="Neologik Assistant">
     </iframe>
@@ -160,10 +160,10 @@
             
             // Update button text
             if (container.classList.contains('show')) {
-                button.textContent = '✖';
+                button.textContent = 'Close';
                 button.setAttribute('title', 'Close Neologik Assistant');
             } else {
-                button.textContent = '💬';
+                button.textContent = 'Chat';
                 button.setAttribute('title', 'Open Neologik Assistant');
             }
         }
