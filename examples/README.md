@@ -1,6 +1,6 @@
 # Neologik Integration Examples
 
-This directory contains working examples of all three integration methods documented in [WEB_EMBED_GUIDE.md](../docs/WEB_EMBED_GUIDE.md).
+This directory contains working examples of the first three integration methods in the [guide](../README.md).
 
 ## Quick Start
 
@@ -47,9 +47,9 @@ This directory contains working examples of all three integration methods docume
 
 All examples use:
 - **FQDN:** `{{FQDN}}`
-- **API Version:** `v4`
-- **Webchat Endpoint:** `/{{BOT_SHORTNAME}}/{{API_VERSION}}/webchat`
-- **Token Endpoint:** `/{{BOT_SHORTNAME}}/{{API_VERSION}}/token`
+- **API Version:** `v5`
+- **Webchat Endpoint:** `/{{CHANNEL_PATH}}/{{API_VERSION}}/webchat`
+- **Token Endpoint:** `/{{CHANNEL_PATH}}/{{API_VERSION}}/token`
 
 To use with your own Neologik instance, replace `{{FQDN}}` with your FQDN throughout the examples.
 
@@ -66,6 +66,6 @@ All examples tested and working in:
 ## Notes
 
 - These are production-ready examples
-- CORS must be configured to allow your domain
+- Your domain must be listed under **Embed origins** on the channel card
 - HTTPS required for production deployment
 - User IDs are persisted in localStorage for conversation continuity
